@@ -1,11 +1,16 @@
-# GymTrack: Workout & Progress Tracking App
+# GymTrack Core: local-first data layer and sync engine
 
-A mobile-first, installable workout tracker I built and use for my own training. Logging works
-instantly and offline; an account adds backup and sync across devices.
+[![tests](https://github.com/MadniAbdulWahab/gymtrack-core/actions/workflows/test.yml/badge.svg)](https://github.com/MadniAbdulWahab/gymtrack-core/actions/workflows/test.yml)
+
+GymTrack is a mobile-first, installable workout tracker I built and use for my own training. Logging
+works instantly and offline; an account adds backup and sync across devices.
 
 **Live app:** [gym-tracker.madniabdulwahab.workers.dev](https://gym-tracker.madniabdulwahab.workers.dev)
 
-The source repository is private. This page shows what the app does and how it is built.
+This repository contains the app's **core data layer**, taken unchanged from the full application:
+the versioned IndexedDB database, the Supabase synchronisation engine, the account-ownership guard,
+the PostgreSQL migrations with row-level security, and their tests. The UI code stays in a private
+repository.
 
 <p>
   <img src="docs/screenshots/train.png" width="250" alt="Train screen with routines">
@@ -51,6 +56,29 @@ completion summary is rebuilt from IndexedDB, so a refresh or a suspended browse
 
 **Updates without interruptions.** The PWA uses a prompt-based service-worker update, so a new
 build activates only when the user taps Update, never in the middle of a workout.
+
+## Code in this repository
+
+| Path | What it does |
+|---|---|
+| `src/db/db.ts` | Versioned Dexie/IndexedDB schema with upgrade migrations and seeding |
+| `src/db/types.ts` | Domain types for workouts, sets, routines, cardio, body weight and settings |
+| `src/lib/sync/engine.ts` | Keyset-paginated pull and push, last-write-wins merge, reconnect and foreground triggers |
+| `src/lib/sync/mappings.ts` | Mapping between local camelCase rows and remote snake_case columns, per table |
+| `src/lib/sync/accountOwnership.ts` | Guard that pauses sync when local data does not belong to the signed-in account |
+| `supabase/migrations/` | PostgreSQL schema, owner-scoped Row Level Security policies and later migrations |
+| `**/*.test.ts` | 31 Vitest tests using an in-memory IndexedDB (`fake-indexeddb`) |
+
+Run the tests:
+
+```bash
+npm ci
+npm test          # 31 tests: sync paging, merge rules, ownership guard, schema upgrades, seed data
+npm run typecheck # TypeScript in strict mode
+```
+
+The full application has 100+ tests across these modules and its UI, analytics, timers and
+import/export.
 
 ## Stack
 

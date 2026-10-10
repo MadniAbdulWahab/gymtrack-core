@@ -1,0 +1,24 @@
+{
+  "name": "gymtrack-core",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Local-first data layer and Supabase sync engine extracted from the GymTrack workout PWA",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.110.7",
+    "dexie": "^4.4.4",
+    "react": "^19.2.7"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.2",
+    "@types/react": "^19.2.17",
+    "fake-indexeddb": "^6.2.5",
+    "typescript": "~6.0.2",
+    "vite": "^8.1.1",
+    "vitest": "^4.1.10"
+  }
+}

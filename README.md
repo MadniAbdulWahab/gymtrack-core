@@ -18,6 +18,26 @@ repository.
   <img src="docs/screenshots/exercise-detail.png" width="250" alt="Exercise guide with muscle diagram">
 </p>
 
+## Why I built it
+
+I train regularly and logged my workouts in Strong, but its progress analytics sit behind
+a paid subscription. I wanted to see my own progress without paying for access to my own
+data, so I built GymTrack, imported my Strong history through its CSV export, and now use
+it for my own training.
+
+## Design decisions and trade-offs
+
+- **Keyset cursors instead of offset paging.** If rows change while a sync is paging,
+  offsets shift and rows get skipped or sent twice. Paging by `(updatedAt, id)` keeps a
+  stable order, and the `id` breaks ties when two rows share a timestamp.
+- **Last-write-wins per row.** Simple and predictable for one person on a few devices.
+  The trade-off: if the same set is edited on two offline phones, the later edit wins.
+- **Ownership guard.** Without it, signing into a different account on the same phone
+  would upload one person's history into another person's account. Sync pauses and asks
+  instead of guessing.
+- **Local writes first.** Logging a set never waits for the network; every action is
+  saved on the device first and synced in the background.
+
 ## What it does
 
 - Strength and cardio logging, reusable routines, body-weight tracking
